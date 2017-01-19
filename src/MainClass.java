@@ -1,59 +1,79 @@
-
-//        1) Сделать так, чтобы в тарелке с едой не могло получиться отрицательного количества еды(например, в миске 10 еды, а кот пытается покушать 15-20)
-//        2) Каждому коту нужно добавить поле сытость(когда создаем котов, они голодны). Если коту удалось покушать(хватило еды), сытость = true
-//        3) Создать массив котов и тарелку с едой, попросить всех котов покушать из этой тарелки и потом вывести информацию о сытости котов в консоль
-//        4) Добавить в тарелку метод, с помощью которого можно было бы добавлять еду в тарелку
-
-
-import java.util.ArrayList;
-import java.util.Collections;
+//
 import java.util.Random;
 
 public class MainClass {
-    static class Cat {
-        private String name;
-        private int appetite;
+	static class Cat {
+		private String name;
+		private int appetite;
+		private boolean fullness;
 
-        public Cat(String name, int appetite) {
-            this.name = name;
-            this.appetite = appetite;
-        }
+		public Cat(String name, int appetite) {
+			this.name = name;
+			this.appetite = appetite;
+			this.fullness = false; // Дом зад 2. Добавляем сытость и выводим инфо про котов.
+		}
 
-        public void eat(Plate p) {
-            // Дом зад 1. Проверяем, чтобы небыло отрицательного значения еды в тарелке
-            if (p.food >= appetite) p.decreaseFood(appetite);
-            else p.food = 0;
-        }
-    }
+		public void info() {
+			System.out.println(this.name + " апетит: " + this.appetite + " сытость:" + this.fullness);
+		}
 
-    static class Plate {
-        private int food;
+		public void eat(Plate p) {
+			// Дом зад 1. Проверяем, чтобы не было отрицательного значения еды в тарелке
+			if (!this.fullness) { // если кот вообще голодный, то ест
+				if (p.food >= appetite) {
+					p.decreaseFood(appetite);
+					this.fullness = true;
+				} else {
+					p.food = 0;
+					this.fullness = false;
+				}
+			}
+		}
+	}
 
-        public void decreaseFood(int n) {
-            food -= n;
-        }
+	static class Plate {
+		private int food;
 
-        public Plate(int food) {
-            this.food = food;
-        }
+		public void decreaseFood(int n) {
+			food -= n;
+		}
 
-        public void info() {
-            System.out.println("plate: " + food);
-        }
-    }
+		public Plate(int food) {
+			this.food = food;
+		}
 
-    <T> void ConvertToArrayList(ArrayList<T> al, T[] AG) {
-        Collections.addAll(al, AG);
-    }
+		public void info() {
+			System.out.println("plate: " + food);
+		}
 
-    public static void main(String[] args) {
-        Cat cat1 = new Cat("Barsik1", 5);
-        Cat cat2 = new Cat("Barsik2", 50);
-        Plate plate = new Plate(60);
+		public void addFood(int _food) { // Дом зад 3. Добавляем ещё еды в тарелку.
+			this.food += _food;
+		}
+	}
+//    <T> void ConvertToArrayList(ArrayList<T> al, T[] AG) {
+//        Collections.addAll(al, AG);
+//    }
 
-        plate.info();
-        cat1.eat(plate);
-        cat2.eat(plate);
-        plate.info();
-    }
+	public static void main(String[] args) {
+		final int NUM_CATS = 10; // Дом зад 3. Всего столько котов. Обрабатываем их циклом и случайным апетитом.
+		Random rand = new Random();
+		Cat[] cats = new Cat[NUM_CATS];
+		Plate plate = new Plate(200);
+
+		for (int i = 0; i < NUM_CATS; i++) { // Заводим всех котов
+			cats[i] = new Cat("Barsik" + i, 5 + rand.nextInt(50));
+		}
+
+		plate.info();
+		plate.addFood(100);
+		plate.info();
+		for (Cat i : cats) {
+			i.info();
+			i.eat(plate);
+		}
+		plate.info();
+		for (Cat i : cats) {
+			i.info();
+		}
+	}
 }
